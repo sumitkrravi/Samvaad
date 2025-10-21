@@ -6,7 +6,10 @@ import UserList from "../components/UserList";
 import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 
-const formatUsername = (username) => username ? username.charAt(0).toUpperCase() + username.slice(1).toLowerCase() : "";
+const formatUsername = (username) =>
+  username
+    ? username.charAt(0).toUpperCase() + username.slice(1).toLowerCase()
+    : "";
 
 export default function Dashboard() {
   const [users, setUsers] = useState([]);
@@ -14,6 +17,7 @@ export default function Dashboard() {
   const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
 
+  // 🔹 Logout handler
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login", { replace: true });
@@ -21,49 +25,90 @@ export default function Dashboard() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) { navigate("/login", { replace: true }); return; }
+    if (!token) {
+      navigate("/login", { replace: true });
+      return;
+    }
 
+    // ✅ Fetch current user
     API.get("/me")
-      .then(res => setCurrentUser(res.data))
-      .catch(err => console.error(err));
+      .then((res) => setCurrentUser(res.data))
+      .catch((err) => console.error(err));
 
+    // ✅ Fetch all users
     API.get("/users")
-      .then(res => setUsers(res.data))
-      .catch(err => console.error(err));
+      .then((res) => setUsers(res.data))
+      .catch((err) => console.error(err));
+  }, [navigate]);
 
-    socket.emit("join", { token });
+  // ✅ Socket.io setup for online/offline tracking
+  useEffect(() => {
+    if (currentUser?._id) {
+      // Inform backend that this user is online
+      socket.emit("new-user-add", currentUser._id);
+    }
 
-    socket.on("updateUsers", onlineUsers => {
-      setUsers(prev => prev.map(u => ({ ...u, online: onlineUsers.includes(u._id) })));
+    // Listen for active users update from server
+    socket.on("get-users", (activeUsers) => {
+      setUsers((prevUsers) =>
+        prevUsers.map((u) => ({
+          ...u,
+          online: activeUsers.some((au) => au.userId === u._id),
+        }))
+      );
     });
 
-    return () => { socket.off("updateUsers"); };
-  }, [navigate]);
+    return () => {
+      socket.off("get-users");
+    };
+  }, [currentUser]);
 
   return (
     <div className="dashboard-container">
+      {/* 🔹 Header */}
       <header className="dashboard-header">
         <div className="header-left">
-          <img src="https://cdn-icons-png.flaticon.com/512/1077/1077012.png" alt="User" className="profile-pic-small" />
-          <span className="username">{currentUser ? formatUsername(currentUser.username) : "Samvaad | संवाद"}</span>
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/1077/1077012.png"
+            alt="User"
+            className="profile-pic-small"
+          />
+          <span className="username">
+            {currentUser
+              ? formatUsername(currentUser.username)
+              : "Samvaad | संवाद"}
+          </span>
         </div>
-        <button className="logout-btn" onClick={handleLogout}>Logout</button>
+        <button className="logout-btn" onClick={handleLogout}>
+          Logout
+        </button>
       </header>
 
+      {/* 🔹 Main Section */}
       <div className="dashboard-main">
+        {/* Sidebar */}
         <aside className="sidebar">
           <div className="user-list-section">
             <h6>Chats</h6>
-            <UserList users={users} onSelect={setSelectedUser} selectedUser={selectedUser} />
+            <UserList
+              users={users}
+              onSelect={setSelectedUser}
+              selectedUser={selectedUser}
+            />
           </div>
         </aside>
 
+        {/* Chat Section */}
         <main className="chat-section">
           {selectedUser ? (
             <ChatBox selectedUser={selectedUser} currentUser={currentUser} />
           ) : (
             <div className="no-chat-selected">
-              <img src="https://cdn-icons-png.flaticon.com/512/134/134914.png" alt="chat" className="chat-illustration" />
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/134/134914.png"
+                alt="chat"
+                className="chat-illustration"
+              />
               <h4>Select a user to start chatting 💬</h4>
             </div>
           )}
