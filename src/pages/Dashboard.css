@@ -1,0 +1,30 @@
+.dashboard-container { display:flex; flex-direction:column; height:100vh; width:100%; background:#f9f9f9; overflow:hidden; }
+.dashboard-header { background:#fff; padding:12px 20px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; z-index:10; }
+.header-left { display:flex; align-items:center; gap:10px; }
+.profile-pic-small { width:40px; height:40px; border-radius:50%; }
+.username { font-weight:600; font-size:16px; color:#333; }
+.logout-btn { background:#ff4747; border:none; color:white; padding:8px 16px; border-radius:8px; cursor:pointer; font-weight:500; transition:0.2s; }
+.logout-btn:hover { background:#e13b3b; }
+.dashboard-main { display:flex; flex:1; height:calc(100vh - 64px); overflow:hidden; }
+.sidebar { background:#1f2937; color:#fff; width:280px; min-width:220px; display:flex; flex-direction:column; padding:1rem; box-sizing:border-box; transition:all 0.3s; }
+.user-list-section { flex:1; overflow-y:auto; }
+.user-list-section h6 { margin-bottom:0.5rem; font-size:0.95rem; font-weight:bold; color:#9ca3af; }
+.chat-section { flex:1; display:flex; justify-content:center; align-items:center; position:relative; background:#e5e7eb; overflow:hidden; }
+.no-chat-selected { display:flex; flex-direction:column; justify-content:center; align-items:center; color:#6b7280; text-align:center; }
+.chat-illustration { width:200px; margin-bottom:1rem; }
+.user-online { width:10px; height:10px; border-radius:50%; margin-right:0.5rem; display:inline-block; }
+.user-online.online { background:#22c55e; }
+.user-online.offline { background:#ef4444; }
+.user-selected { background-color:#374151; border-radius:8px; }
+.user-list-section::-webkit-scrollbar { width:6px; }
+.user-list-section::-webkit-scrollbar-thumb { background-color:#4b5563; border-radius:3px; }
+
+@media (max-width:768px){
+.dashboard-main { flex-direction:column; height:auto; }
+.sidebar { width:100%; flex-direction:row; overflow-x:auto; padding:0.5rem; justify-content:flex-start; align-items:center; }
+.user-list-section { display:flex; flex-direction:row; overflow-x:auto; flex:1; margin-left:1rem; }
+.user-list-section h6 { display:none; }
+.chat-section { flex:1; padding:0.5rem; }
+.profile-pic-small { width:35px; height:35px; }
+.username { font-size:14px; }
+}
