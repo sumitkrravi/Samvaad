@@ -23,6 +23,7 @@ export default function Dashboard() {
     navigate("/login", { replace: true });
   };
 
+  // ✅ Fetch current user + all users
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -30,25 +31,25 @@ export default function Dashboard() {
       return;
     }
 
-    // ✅ Fetch current user
+    // Fetch logged-in user
     API.get("/me")
       .then((res) => setCurrentUser(res.data))
       .catch((err) => console.error(err));
 
-    // ✅ Fetch all users
+    // Fetch all users
     API.get("/users")
       .then((res) => setUsers(res.data))
       .catch((err) => console.error(err));
   }, [navigate]);
 
-  // ✅ Socket.io setup for online/offline tracking
+  // ✅ Socket setup for online/offline user tracking
   useEffect(() => {
-    if (currentUser?._id) {
-      // Inform backend that this user is online
-      socket.emit("new-user-add", currentUser._id);
-    }
+    if (!currentUser?._id) return;
 
-    // Listen for active users update from server
+    // Notify backend that user is online
+    socket.emit("new-user-add", currentUser._id);
+
+    // Listen for updates on active users
     socket.on("get-users", (activeUsers) => {
       setUsers((prevUsers) =>
         prevUsers.map((u) => ({
@@ -58,6 +59,7 @@ export default function Dashboard() {
       );
     });
 
+    // Cleanup
     return () => {
       socket.off("get-users");
     };

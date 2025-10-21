@@ -1,6 +1,5 @@
 import { io } from "socket.io-client";
 
-export const socket = io("https://samvaadd.vercel.app/", {
-  withCredentials: true,
+export const socket = io("https://samvaad-backend-925t.onrender.com", {
   transports: ["websocket"],
 });
