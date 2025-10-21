@@ -32,14 +32,17 @@ export default function Dashboard() {
     }
 
     // Fetch logged-in user
-    API.get("/me")
+    API.get("/me", { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => setCurrentUser(res.data))
-      .catch((err) => console.error(err));
+      .catch((err) => console.error("ME API ERROR:", err));
 
     // Fetch all users
-    API.get("/users")
-      .then((res) => setUsers(res.data))
-      .catch((err) => console.error(err));
+    API.get("/users", { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => {
+        console.log("USERS API RESPONSE:", res.data); // Debug
+        setUsers(res.data);
+      })
+      .catch((err) => console.error("USERS API ERROR:", err));
   }, [navigate]);
 
   // ✅ Socket setup for online/offline user tracking
@@ -92,11 +95,17 @@ export default function Dashboard() {
         <aside className="sidebar">
           <div className="user-list-section">
             <h6>Chats</h6>
-            <UserList
-              users={users}
-              onSelect={setSelectedUser}
-              selectedUser={selectedUser}
-            />
+            {users.length > 0 ? (
+              <UserList
+                users={users}
+                onSelect={setSelectedUser}
+                selectedUser={selectedUser}
+              />
+            ) : (
+              <p style={{ padding: "10px", color: "#555" }}>
+                No users available
+              </p>
+            )}
           </div>
         </aside>
 
