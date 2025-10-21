@@ -22,7 +22,7 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/auth/signup", formData);
+      await axios.post("https://samvaad-backend-925t.onrender.com/api/auth/signup", formData);
       setSuccess("Signup successful! You can now login.");
       setError("");
     } catch (err) {

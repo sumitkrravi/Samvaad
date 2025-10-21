@@ -24,7 +24,7 @@ export default function Login() {
     e.preventDefault();
     setError("");
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/login", credentials);
+      const response = await axios.post("https://samvaad-backend-925t.onrender.com/api/auth/login", credentials);
       localStorage.setItem("token", response.data.token);
       navigate("/dashboard", { replace: true });
     } catch (err) {
